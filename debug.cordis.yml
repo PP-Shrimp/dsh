@@ -1,4 +1,0 @@
-# Local development overlay for: dsh web --patch /Users/Admin/SGit/dsh/debug.cordis.yml
-- insert:
-    - id: dsh-current-time-plugin
-      name: '/Users/Admin/SGit/dsh/lib/index.js'

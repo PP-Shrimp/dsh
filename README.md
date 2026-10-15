@@ -1,50 +1,39 @@
-# dsh current-time plugin
+# dsh Aurora Web Theme Plugin
 
-一个为 DeepSeek Harness（dsh）注册 `current_time` 工具的本地插件。工具在每次调用时读取当前时间，并返回 ISO 8601 UTC 时间、Unix 毫秒时间戳、使用的时区和本地化时间。
+一个为 DeepSeek Harness（dsh）提供 Aurora 靛蓝配色的 Web 主题插件。它只修改 Web UI 的语义主题 token，不注册工具，也不改变 dsh 内置的 `light`、`dark` 和 `system` 外观选择。
 
 ## 构建
 
 ```sh
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
-## 用 `dsh web` 调试本地插件
+构建会同时生成：
 
-先构建插件，再用本地覆盖层启动 Web UI：
+- `lib/index.js`：dsh bundle 所需的 Host 入口（无业务逻辑）
+- `lib/client.js`：dsh Web 客户端模块 bundle
 
-```sh
-npm run build
-dsh web --patch /Users/Admin/SGit/dsh/debug.cordis.yml
-```
-
-然后打开 <http://127.0.0.1:3080>，向模型发送：
-
-```text
-请调用 current_time 工具，告诉我上海现在的时间。
-```
-
-也可以直接指定时区：
-
-```text
-请调用 current_time 工具，并将 timeZone 设置为 Asia/Tokyo。
-```
-
-`debug.cordis.yml` 使用当前工作区的绝对路径 `/Users/Admin/SGit/dsh/lib/index.js`。如果把项目移动到其他目录，请同步修改该文件中的路径。
-
-## 作为 bundle 安装
-
-如果希望把插件加入 `web` profile，而不是每次通过 overlay 加载：
+## 安装到 web profile
 
 ```sh
 dsh plugin --profile web add /Users/Admin/SGit/dsh
-dsh --profile web
+dsh web
 ```
 
-`cordis.patch.yml` 是安装 bundle 使用的 patch；`debug.cordis.yml` 只用于本地开发时直接引用构建后的入口文件。
+如果 Web 服务已经运行，请重启后再查看主题效果，并使用浏览器强制刷新。主题代码位于 `src/client.ts`，可以在 `AURORA_TOKENS` 中分别修改 `light` 和 `dark` 配色。
 
-## 工具返回值
+## 主题特性
 
-`current_time` 的 `timeZone` 参数是可选的 IANA 时区名称，例如 `Asia/Shanghai`、`Asia/Tokyo` 或 `America/Los_Angeles`。不传时使用运行 dsh 进程的本地时区。无效时区会让工具调用失败并返回明确的运行时错误。
+- 页面背景、卡片层级和边框
+- 主文本、辅助文本和状态文本
+- 品牌色和主按钮
+- Hover/Active 状态
+- 设置卡片、滚动条和 Tooltip
+- 自动适配 `light`、`dark`、`system`
 
-实现遵循 dsh 的[工具编写参考](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cookbook/adding-a-tool.md)和[本地插件调试教程](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/index.zh.md)。
+主题通过 dsh 官方 `ctx.theme.overrideTokens()` API 实现，禁用或卸载插件后会自动移除覆盖层。
+
+## 选择主题颜色
+
+启动后打开 dsh 的设置页，在 General 中找到 **Theme color / 主题颜色**，点击颜色方块即可选择强调色。选择会实时应用到品牌色、主按钮和交互高亮，并保存到当前 dsh profile；下次启动会自动恢复。
